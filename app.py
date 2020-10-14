@@ -55,7 +55,7 @@ while True:
         print("device not find")
         continue
         # sys.exit()
-    print("line 58")
+    print("line 58--waiting device to ble mode , just open blue light")
     try :
         p = Peripheral(roehladdress, "public")
     except Exception:
@@ -66,7 +66,7 @@ while True:
         ch_result = None
         ch_write = None
         continue
-    print("line 60")
+    print("line 60-- going ")
     p.setMTU(100)
     # ch = p.getCharacteristics(uuid=temp_uuid)[0]
     print("-----")
