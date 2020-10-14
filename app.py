@@ -5,6 +5,7 @@ import struct
 import time
 import sys
 
+
 from bluepy.btle import UUID, Peripheral
 
 # create a delegate class to receive the BLE broadcast packets
@@ -26,6 +27,7 @@ class ScanDelegate(DefaultDelegate):
     # create a list of unique devices that the scanner discovered during a 10-second scan
 while True:
     scanner = Scanner().withDelegate(ScanDelegate())
+    scanner.clear()
     devices = scanner.scan(1.0)
 
     # for each device  in the list of devices
@@ -53,15 +55,25 @@ while True:
         print("device not find")
         continue
         # sys.exit()
-
-    p = Peripheral(roehladdress, "public")
+    print("line 58")
+    try :
+        p = Peripheral(roehladdress, "public")
+    except Exception:
+        print("--Peripheral-reset--")
+        scanner = None
+        p = None
+        ch_name = None
+        ch_result = None
+        ch_write = None
+        continue
+    print("line 60")
     p.setMTU(100)
     # ch = p.getCharacteristics(uuid=temp_uuid)[0]
     print("-----")
     # print(ch.read())
     try:
         service = p.getServiceByUUID(service_uuid)
-    except :
+    except Exception:
         print("------")
         print("--uuid reset---")
         continue
@@ -81,6 +93,7 @@ while True:
     #  ch_write.write(("\"ROEHL\",\"0000000000\",\"8aCuu1ZTB16bLE6gfAZuIA==\"").encode('utf8'))
     ch_write.write(sendstr.encode('utf8'))
     print("dissconnect")
+    p.disconnect()
     scanner = None
     p = None
     ch_name = None
