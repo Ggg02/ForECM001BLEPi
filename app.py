@@ -28,7 +28,7 @@ class ScanDelegate(DefaultDelegate):
 while True:
     scanner = Scanner().withDelegate(ScanDelegate())
     scanner.clear()
-    devices = scanner.scan(1.0)
+    devices = scanner.scan(2.0)
 
     # for each device  in the list of devices
     roehladdress = ""
@@ -53,6 +53,11 @@ while True:
     
     if len(roehladdress)<5 :
         print("device not find")
+        scanner = None
+        p = None
+        ch_name = None
+        ch_result = None
+        ch_write = None
         continue
         # sys.exit()
     print("line 58--waiting device to ble mode , just open blue light")
@@ -75,23 +80,52 @@ while True:
         service = p.getServiceByUUID(service_uuid)
     except Exception:
         print("------")
-        print("--uuid reset---")
+        print("--getServiceByUUID reset---")
+        p.disconnect()
+        scanner = None
+        p = None
+        ch_name = None
+        ch_result = None
+        ch_write = None
         continue
     print(service)
 
     name_UUID = UUID(0xff01)
     result_UUID = UUID(0xff02)
     write_UUID = UUID(0xff03)
-    ch_name = service.getCharacteristics(name_UUID)[0]
-    ch_result = service.getCharacteristics(result_UUID)[0]
-    ch_write = service.getCharacteristics(write_UUID)[0]
-
-    print(ch_name.read())
-    print(ch_result.read())
+    try :
+        ch_name = service.getCharacteristics(name_UUID)[0]
+        ch_result = service.getCharacteristics(result_UUID)[0]
+        ch_write = service.getCharacteristics(write_UUID)[0]
+    
+        print(ch_name.read())
+        print(ch_result.read())
+    except Exception:
+        print("------")
+        print("--read reset---")
+        p.disconnect()
+        scanner = None
+        p = None
+        ch_name = None
+        ch_result = None
+        ch_write = None
+        continue
 
     sendstr = "\"{SSID}\",\"{PWD}\",\"{PSK}\"".format(SSID=sys.argv[1],PWD=sys.argv[2],PSK=sys.argv[3])
     #  ch_write.write(("\"ROEHL\",\"0000000000\",\"8aCuu1ZTB16bLE6gfAZuIA==\"").encode('utf8'))
-    ch_write.write(sendstr.encode('utf8'))
+    try:
+        ch_write.write(sendstr.encode('utf8'))
+    except Exception:
+        print("------")
+        print("--write reset---")
+        p.disconnect()
+        scanner = None
+        p = None
+        ch_name = None
+        ch_result = None
+        ch_write = None
+        continue
+
     print("dissconnect")
     p.disconnect()
     scanner = None
