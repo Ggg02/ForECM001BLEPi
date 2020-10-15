@@ -60,11 +60,11 @@ while True:
         ch_write = None
         continue
         # sys.exit()
-    print("line 58--waiting device to ble mode , just open blue light")
+    print("line 58--waiting device to ble mode , just open blue light or ctrl+c ")
     try :
         p = Peripheral(roehladdress, "public")
     except Exception:
-        print("--Peripheral-reset--")
+        print("--Peripheral-reset--or ctrl+c")
         scanner = None
         p = None
         ch_name = None
@@ -80,7 +80,7 @@ while True:
         service = p.getServiceByUUID(service_uuid)
     except Exception:
         print("------")
-        print("--getServiceByUUID reset---")
+        print("--getServiceByUUID reset---or ctrl+c ")
         p.disconnect()
         scanner = None
         p = None
